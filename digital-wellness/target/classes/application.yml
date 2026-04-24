@@ -1,0 +1,25 @@
+# 应用配置
+spring:
+  application:
+    name: digital-wellness
+  datasource:
+    url: jdbc:mysql://localhost:3306/iterate?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: "root"
+    password: "041222"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+# 阿里云百炼配置
+alibaba:
+  bailing:
+    api-key: sk-fbe5effd65ca478495cb81d27f113845
+    api-url: https://ark.cn-beijing.volces.com/api/v3/chat/completions
+    model: deepseek-r1-distill-qwen-7b
+
+# OpenAI 配置（暂时保留，后续可移除）
+# openai:
+#   api:
+#     key: sk-fbe5effd65ca478495cb81d27f113845
