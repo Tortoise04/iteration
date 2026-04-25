@@ -4,19 +4,71 @@
   box-sizing: border-box;
 }
 
+html, body, #root {
+  min-height: 100vh;
+  width: 100%;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f0f2f5;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* ========================================
+   深色模式全局样式覆盖
+   ======================================== */
+
+/* 深色模式下 Antd 输入框样式 */
+.dark .ant-input,
+.dark .ant-input-affix-wrapper,
+.dark .ant-input-password .ant-input,
+.dark .ant-input-affix-wrapper > input.ant-input {
+  background-color: #2a2a2a !important;
+  color: #ffffffd9 !important;
+  border-color: #434343 !important;
 }
+
+.dark .ant-input::placeholder {
+  color: #ffffff73 !important;
+}
+
+.dark .ant-input-affix-wrapper .ant-input-prefix,
+.dark .ant-input-affix-wrapper .ant-input-suffix {
+  color: #ffffff73 !important;
+}
+
+.dark .ant-input:hover,
+.dark .ant-input-affix-wrapper:hover {
+  border-color: #1890ff !important;
+}
+
+.dark .ant-input:focus,
+.dark .ant-input-affix-wrapper-focused {
+  border-color: #1890ff !important;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+}
+
+/* 深色模式下 Form 标签 */
+.dark .ant-form-item-label > label {
+  color: #ffffffd9 !important;
+}
+
+/* 深色模式下密码输入框的图标 */
+.dark .ant-input-password-icon {
+  color: #ffffff73 !important;
+}
+
+/* 登录卡片深色模式 */
+.dark .login-card {
+  background-color: #1f1f1f !important;
+}
+
+/* ========================================
+   Antd 布局基础样式
+   ======================================== */
 
 .ant-layout {
   min-height: 100vh;

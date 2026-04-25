@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn compile *)",
+      "Bash(mvn clean *)",
+      "Bash(timeout 30 mvn spring-boot:run)",
+      "Bash(npm install *)"
+    ]
+  }
+}

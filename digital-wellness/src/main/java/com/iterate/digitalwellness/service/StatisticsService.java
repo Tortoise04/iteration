@@ -6,4 +6,5 @@ import java.util.Map;
 public interface StatisticsService {
     Map<String, Object> getWeeklyStatistics(LocalDate startDate, LocalDate endDate);
     Map<String, Object> getMonthlyStatistics(LocalDate startDate, LocalDate endDate);
+    Map<String, Object> getDashboardStatistics();
 }

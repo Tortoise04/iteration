@@ -11,15 +11,39 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 
-# 阿里云百炼配置
-alibaba:
-  bailing:
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.iterate.digitalwellness: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# AI 模型配置（支持多厂商）
+ai:
+  # 当前使用的厂商: alibaba-bailing / volc-engine / openai
+  provider: alibaba-bailing
+
+  # 阿里云百炼配置
+  alibaba-bailing:
     api-key: sk-fbe5effd65ca478495cb81d27f113845
-    api-url: https://ark.cn-beijing.volces.com/api/v3/chat/completions
-    model: deepseek-r1-distill-qwen-7b
+    model: qwen-plus
+    api-url: https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation
 
-# OpenAI 配置（暂时保留，后续可移除）
-# openai:
-#   api:
-#     key: sk-fbe5effd65ca478495cb81d27f113845
+  # 字节跳动火山引擎配置（备用）
+  volc-engine:
+    api-key: your-volc-engine-api-key
+    model: deepseek-r1-distill-qwen-7b
+    api-url: https://ark.cn-beijing.volces.com/api/v3/chat/completions
+
+  # OpenAI 配置（备用）
+  openai:
+    api-key: your-openai-api-key
+    model: gpt-3.5-turbo
+    api-url: https://api.openai.com/v1/chat/completions
