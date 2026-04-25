@@ -1,0 +1,82 @@
+{
+  "groups": [
+    {
+      "name": "ai",
+      "type": "com.iterate.digitalwellness.ai.AIConfig",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig"
+    },
+    {
+      "name": "ai.alibaba-bailing",
+      "type": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig",
+      "sourceMethod": "getAlibabaBailing()"
+    },
+    {
+      "name": "ai.openai",
+      "type": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig",
+      "sourceMethod": "getOpenai()"
+    },
+    {
+      "name": "ai.volc-engine",
+      "type": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig",
+      "sourceMethod": "getVolcEngine()"
+    }
+  ],
+  "properties": [
+    {
+      "name": "ai.alibaba-bailing.api-key",
+      "type": "java.lang.String",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
+    },
+    {
+      "name": "ai.alibaba-bailing.api-url",
+      "type": "java.lang.String",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
+    },
+    {
+      "name": "ai.alibaba-bailing.model",
+      "type": "java.lang.String",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
+    },
+    {
+      "name": "ai.openai.api-key",
+      "type": "java.lang.String",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
+    },
+    {
+      "name": "ai.openai.api-url",
+      "type": "java.lang.String",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
+    },
+    {
+      "name": "ai.openai.model",
+      "type": "java.lang.String",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
+    },
+    {
+      "name": "ai.provider",
+      "type": "java.lang.String",
+      "description": "当前使用的提供商",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig",
+      "defaultValue": "alibaba-bailing"
+    },
+    {
+      "name": "ai.volc-engine.api-key",
+      "type": "java.lang.String",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
+    },
+    {
+      "name": "ai.volc-engine.api-url",
+      "type": "java.lang.String",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
+    },
+    {
+      "name": "ai.volc-engine.model",
+      "type": "java.lang.String",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
+    }
+  ],
+  "hints": []
+}
