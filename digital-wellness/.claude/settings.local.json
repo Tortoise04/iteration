@@ -4,7 +4,9 @@
       "Bash(mvn compile *)",
       "Bash(mvn clean *)",
       "Bash(timeout 30 mvn spring-boot:run)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(./mvnw compile *)",
+      "Bash(mvn spring-boot:run)"
     ]
   }
 }

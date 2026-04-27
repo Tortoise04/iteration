@@ -14,8 +14,10 @@ com\iterate\digitalwellness\service\GoalService.class
 com\iterate\digitalwellness\service\impl\GoalServiceImpl.class
 com\iterate\digitalwellness\DigitalWellnessApplication.class
 com\iterate\digitalwellness\repository\GoalRepository.class
+com\iterate\digitalwellness\dto\PhoneUsageDTO.class
 com\iterate\digitalwellness\ai\AIService.class
 com\iterate\digitalwellness\service\PeriodSummaryService.class
+com\iterate\digitalwellness\dto\AppUsageDetailDTO.class
 com\iterate\digitalwellness\service\impl\DailyActivityServiceImpl.class
 com\iterate\digitalwellness\util\JwtUtil.class
 com\iterate\digitalwellness\service\impl\PeriodSummaryServiceImpl.class
@@ -26,6 +28,7 @@ com\iterate\digitalwellness\entity\DailyActivity.class
 com\iterate\digitalwellness\repository\PeriodSummaryRepository.class
 com\iterate\digitalwellness\controller\DailyActivityController.class
 com\iterate\digitalwellness\controller\AuthController.class
+com\iterate\digitalwellness\dto\PhoneUsageCreateDTO.class
 com\iterate\digitalwellness\entity\PhoneUsage.class
 com\iterate\digitalwellness\service\AchievementService.class
 com\iterate\digitalwellness\service\StatisticsService.class

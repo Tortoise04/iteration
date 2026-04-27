@@ -22,6 +22,12 @@
       "type": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig",
       "sourceType": "com.iterate.digitalwellness.ai.AIConfig",
       "sourceMethod": "getVolcEngine()"
+    },
+    {
+      "name": "ai.zhipu",
+      "type": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig",
+      "sourceMethod": "getZhipu()"
     }
   ],
   "properties": [
@@ -60,7 +66,7 @@
       "type": "java.lang.String",
       "description": "当前使用的提供商",
       "sourceType": "com.iterate.digitalwellness.ai.AIConfig",
-      "defaultValue": "alibaba-bailing"
+      "defaultValue": "zhipu"
     },
     {
       "name": "ai.volc-engine.api-key",
@@ -74,6 +80,21 @@
     },
     {
       "name": "ai.volc-engine.model",
+      "type": "java.lang.String",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
+    },
+    {
+      "name": "ai.zhipu.api-key",
+      "type": "java.lang.String",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
+    },
+    {
+      "name": "ai.zhipu.api-url",
+      "type": "java.lang.String",
+      "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
+    },
+    {
+      "name": "ai.zhipu.model",
       "type": "java.lang.String",
       "sourceType": "com.iterate.digitalwellness.ai.AIConfig$ProviderConfig"
     }

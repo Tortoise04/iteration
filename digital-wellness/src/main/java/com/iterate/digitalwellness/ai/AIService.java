@@ -25,6 +25,7 @@ public class AIService {
     @PostConstruct
     public void init() {
         // 注册所有支持的提供商
+        registerProvider(new OpenAICompatibleProvider("zhipu", aiConfig.getZhipu()));
         registerProvider(new AlibabaBailingProvider(aiConfig.getAlibabaBailing()));
         registerProvider(new OpenAICompatibleProvider("volc-engine", aiConfig.getVolcEngine()));
         registerProvider(new OpenAICompatibleProvider("openai", aiConfig.getOpenai()));

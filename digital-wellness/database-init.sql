@@ -40,7 +40,11 @@ CREATE TABLE `user` (
 
 -- 插入默认管理员账户 (用户名: admin, 密码: admin123)
 INSERT INTO `user` (`username`, `password`, `role`) VALUES
-('admin', '$2a$10$1234567890abcdefghijklmnopqrstuvwxyz', 'ADMIN');
+('admin', 'admin123', 'ADMIN');
+
+-- 插入普通测试用户 (用户名: test, 密码: test123)
+INSERT INTO `user` (`username`, `password`, `role`) VALUES
+('test', 'test123', 'USER');
 
 -- ============================================
 -- 第3部分: 手机使用情况模块
@@ -57,6 +61,7 @@ CREATE TABLE `app_preset` (
   `icon` VARCHAR(255) COMMENT 'App图标URL或图标名称',
   `is_active` TINYINT(1) DEFAULT 1 COMMENT '是否启用: 0-禁用, 1-启用',
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_app_name` (`app_name`),
   KEY `idx_is_active` (`is_active`),

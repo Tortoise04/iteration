@@ -4,15 +4,29 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "app_preset")
 public class AppPreset {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "app_name")
     private String appName;
+
+    @Column(name = "sort_order")
     private Integer sortOrder = 0;
+
+    @Column(name = "icon")
     private String icon;
+
+    @Column(name = "is_active")
     private Boolean isActive = true;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     public Long getId() {
         return id;
@@ -60,5 +74,13 @@ public class AppPreset {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

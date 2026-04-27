@@ -36,12 +36,13 @@ request.interceptors.response.use(
     console.error('[request 拦截器] 完整 error:', error);
     console.error('[request 拦截器] 完整 error.response:', error?.response);
 
-    /* === 注释掉"无情踢人"逻辑，开发阶段只做日志 ===
+    // 401 处理逻辑（暂时注释，方便开发
+    /*
     if (error?.response?.status === 401) {
       localStorage.removeItem(TOKEN_KEY);
       window.location.href = '/login';
     }
-    ===*/
+    */
 
     return Promise.reject(error);
   }

@@ -27,8 +27,14 @@ logging:
 
 # AI 模型配置（支持多厂商）
 ai:
-  # 当前使用的厂商: alibaba-bailing / volc-engine / openai
-  provider: alibaba-bailing
+  # 当前使用的厂商: zhipu / alibaba-bailing / volc-engine / openai
+  provider: zhipu
+
+  # 智谱AI配置
+  zhipu:
+    api-key: 254237c65bad4b7ba8aa7ce0921cd232.2kNPXtYzZcYiK8fJ
+    model: glm-5.1
+    api-url: https://open.bigmodel.cn/api/paas/v4/chat/completions
 
   # 阿里云百炼配置
   alibaba-bailing:

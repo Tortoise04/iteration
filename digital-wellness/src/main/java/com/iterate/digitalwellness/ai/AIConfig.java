@@ -17,7 +17,12 @@ public class AIConfig {
     /**
      * 当前使用的提供商
      */
-    private String provider = "alibaba-bailing";
+    private String provider = "zhipu";
+
+    /**
+     * 智谱AI配置
+     */
+    private ProviderConfig zhipu = new ProviderConfig();
 
     /**
      * 阿里云百炼配置
@@ -41,6 +46,14 @@ public class AIConfig {
 
     public void setProvider(String provider) {
         this.provider = provider;
+    }
+
+    public ProviderConfig getZhipu() {
+        return zhipu;
+    }
+
+    public void setZhipu(ProviderConfig zhipu) {
+        this.zhipu = zhipu;
     }
 
     public ProviderConfig getAlibabaBailing() {
@@ -72,6 +85,10 @@ public class AIConfig {
      */
     public ProviderConfig getConfigByProvider(String providerName) {
         switch (providerName.toLowerCase()) {
+            case "zhipu":
+            case "zhipuai":
+            case "glm":
+                return zhipu;
             case "alibaba-bailing":
             case "alibaba":
             case "bailing":
@@ -84,7 +101,7 @@ public class AIConfig {
             case "open-ai":
                 return openai;
             default:
-                return alibabaBailing;
+                return zhipu;
         }
     }
 

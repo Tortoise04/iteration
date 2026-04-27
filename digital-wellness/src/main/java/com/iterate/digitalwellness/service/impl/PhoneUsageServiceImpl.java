@@ -25,6 +25,11 @@ public class PhoneUsageServiceImpl implements PhoneUsageService {
     }
 
     @Override
+    public List<PhoneUsage> findByUserId(Long userId) {
+        return phoneUsageRepository.findByUserId(userId);
+    }
+
+    @Override
     public PhoneUsage findById(Long id) {
         return phoneUsageRepository.findById(id).orElse(null);
     }
@@ -37,5 +42,10 @@ public class PhoneUsageServiceImpl implements PhoneUsageService {
     @Override
     public List<PhoneUsage> findByDateBetween(LocalDate startDate, LocalDate endDate) {
         return phoneUsageRepository.findByDateBetween(startDate, endDate);
+    }
+
+    @Override
+    public List<PhoneUsage> findByUserIdAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate) {
+        return phoneUsageRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
     }
 }
