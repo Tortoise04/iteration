@@ -54,8 +54,9 @@ public class Goal {
 
     public void setUserId(Long userId) {
         if (userId != null) {
-            this.user = new User();
-            this.user.setId(userId);
+            User user = new User();
+            user.setId(userId);
+            this.user = user;
         } else {
             this.user = null;
         }

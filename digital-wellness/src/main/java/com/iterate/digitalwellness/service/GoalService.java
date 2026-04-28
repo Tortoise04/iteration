@@ -1,7 +1,6 @@
 package com.iterate.digitalwellness.service;
 
 import com.iterate.digitalwellness.entity.Goal;
-
 import java.util.List;
 
 public interface GoalService {
@@ -9,4 +8,5 @@ public interface GoalService {
     List<Goal> findAll();
     Goal findById(Long id);
     void deleteById(Long id);
+    List<Goal> findByUserId(Long userId);
 }

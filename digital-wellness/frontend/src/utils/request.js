@@ -6,7 +6,7 @@ const TOKEN_KEY = 'digital_wellness_token';
 // 创建 axios 实例
 const request = axios.create({
   baseURL: '/api',
-  timeout: 120000  // 超时时间 120 秒（AI 生成可能较慢）
+  timeout: 300000
 });
 
 // 请求拦截器 - 自动在请求头中添加 Token

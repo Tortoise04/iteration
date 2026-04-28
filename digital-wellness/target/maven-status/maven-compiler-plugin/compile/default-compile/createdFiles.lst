@@ -8,6 +8,7 @@ META-INF\spring-configuration-metadata.json
 com\iterate\digitalwellness\service\impl\PhoneUsageServiceImpl.class
 com\iterate\digitalwellness\repository\UserRepository.class
 com\iterate\digitalwellness\exception\GlobalExceptionHandler.class
+com\iterate\digitalwellness\service\DailySubtaskService.class
 com\iterate\digitalwellness\service\impl\AchievementServiceImpl.class
 com\iterate\digitalwellness\entity\AppPreset.class
 com\iterate\digitalwellness\service\GoalService.class
@@ -17,6 +18,7 @@ com\iterate\digitalwellness\repository\GoalRepository.class
 com\iterate\digitalwellness\dto\PhoneUsageDTO.class
 com\iterate\digitalwellness\ai\AIService.class
 com\iterate\digitalwellness\service\PeriodSummaryService.class
+com\iterate\digitalwellness\util\SecurityUtils.class
 com\iterate\digitalwellness\dto\AppUsageDetailDTO.class
 com\iterate\digitalwellness\service\impl\DailyActivityServiceImpl.class
 com\iterate\digitalwellness\util\JwtUtil.class
@@ -35,6 +37,9 @@ com\iterate\digitalwellness\service\StatisticsService.class
 com\iterate\digitalwellness\repository\DailyActivityRepository.class
 com\iterate\digitalwellness\service\DailyActivityService.class
 com\iterate\digitalwellness\ai\provider\OpenAICompatibleProvider.class
+com\iterate\digitalwellness\controller\AppPresetController.class
+com\iterate\digitalwellness\controller\DailySubtaskController.class
+com\iterate\digitalwellness\service\impl\DailySubtaskServiceImpl.class
 com\iterate\digitalwellness\ai\AIProvider.class
 com\iterate\digitalwellness\repository\DailySubtaskRepository.class
 com\iterate\digitalwellness\entity\Achievement.class
@@ -42,6 +47,7 @@ com\iterate\digitalwellness\repository\AppUsageDetailRepository.class
 com\iterate\digitalwellness\entity\DailySubtask.class
 com\iterate\digitalwellness\entity\AppUsageDetail.class
 com\iterate\digitalwellness\controller\StatisticsController.class
+com\iterate\digitalwellness\service\AppPresetService.class
 com\iterate\digitalwellness\controller\AchievementController.class
 com\iterate\digitalwellness\ai\AIConfig.class
 com\iterate\digitalwellness\entity\User.class

@@ -1,7 +1,10 @@
 package com.iterate.digitalwellness.controller;
 
 import com.iterate.digitalwellness.entity.PeriodSummary;
+import com.iterate.digitalwellness.entity.User;
+import com.iterate.digitalwellness.repository.UserRepository;
 import com.iterate.digitalwellness.service.PeriodSummaryService;
+import com.iterate.digitalwellness.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,37 @@ public class PeriodSummaryController {
 
     @Autowired
     private PeriodSummaryService periodSummaryService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    /**
+     * 从 Authorization header 提取用户 ID
+     */
+    private Long extractUserId(String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            try {
+                String username = jwtUtil.getUsernameFromToken(token);
+                User user = userRepository.findByUsername(username);
+                if (user != null) {
+                    return user.getId();
+                }
+            } catch (Exception e) {
+                logger.warn("Token 解析失败: {}", e.getMessage());
+            }
+        }
+        // 开发阶段：如果没有token，返回第一个用户的ID，方便测试
+        List<User> users = userRepository.findAll();
+        if (!users.isEmpty()) {
+            logger.warn("使用默认用户ID: {}", users.get(0).getId());
+            return users.get(0).getId();
+        }
+        return null;
+    }
 
     @PostMapping
     public ResponseEntity<?> save(@RequestBody PeriodSummary periodSummary) {
@@ -133,10 +167,17 @@ public class PeriodSummaryController {
     public ResponseEntity<?> generateSummary(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-            @RequestParam String periodType) {
+            @RequestParam String periodType,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
-            logger.info("AI 生成周期总结: {} 至 {}, 类型: {}", startDate, endDate, periodType);
-            PeriodSummary summary = periodSummaryService.generateSummary(startDate, endDate, periodType);
+            Long userId = extractUserId(authHeader);
+            if (userId == null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("error", "未授权");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+            logger.info("AI 生成周期总结: {} 至 {}, 类型: {}, userId: {}", startDate, endDate, periodType, userId);
+            PeriodSummary summary = periodSummaryService.generateSummary(userId, startDate, endDate, periodType);
             logger.info("AI 生成总结成功");
             return ResponseEntity.ok(summary);
         } catch (Exception e) {

@@ -18,4 +18,7 @@ public interface PhoneUsageRepository extends JpaRepository<PhoneUsage, Long> {
 
     @Query("SELECT p FROM PhoneUsage p WHERE p.user.id = :userId AND p.date BETWEEN :startDate AND :endDate")
     List<PhoneUsage> findByUserIdAndDateBetween(@Param("userId") Long userId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT p FROM PhoneUsage p WHERE p.user.id = :userId AND p.date = :date")
+    PhoneUsage findByUserIdAndDate(@Param("userId") Long userId, @Param("date") LocalDate date);
 }

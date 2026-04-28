@@ -23,4 +23,10 @@ public interface GoalRepository extends JpaRepository<Goal, Long> {
      * 按状态查询目标
      */
     List<Goal> findByStatus(String status);
+    
+    /**
+     * 按用户 ID 查询目标
+     */
+    @Query("SELECT g FROM Goal g WHERE g.user.id = :userId")
+    List<Goal> findByUserId(@Param("userId") Long userId);
 }

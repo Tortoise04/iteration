@@ -19,8 +19,8 @@ import java.util.*;
 public class OpenAICompatibleProvider implements AIProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenAICompatibleProvider.class);
-    private static final int CONNECT_TIMEOUT = 30000;  // 连接超时 30秒
-    private static final int READ_TIMEOUT = 120000;    // 读取超时 120秒
+    private static final int CONNECT_TIMEOUT = 60000;  // 连接超时 60秒
+    private static final int READ_TIMEOUT = 300000;    // 读取超时 300秒
 
     private final String name;
     private final ProviderConfig config;
@@ -44,6 +44,9 @@ public class OpenAICompatibleProvider implements AIProvider {
         return name;
     }
 
+    private static final int MAX_TOKENS = 4096;
+    private static final int MAX_CONTINUATIONS = 3;
+
     @Override
     public String generate(String systemPrompt, String userPrompt) {
         if (!isAvailable()) {
@@ -55,10 +58,6 @@ public class OpenAICompatibleProvider implements AIProvider {
         long startTime = System.currentTimeMillis();
 
         try {
-            // 构建 OpenAI 兼容格式请求体
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", config.getModel());
-
             List<Map<String, String>> messages = new ArrayList<>();
 
             if (systemPrompt != null && !systemPrompt.isEmpty()) {
@@ -73,56 +72,99 @@ public class OpenAICompatibleProvider implements AIProvider {
             userMessage.put("content", userPrompt);
             messages.add(userMessage);
 
-            requestBody.put("messages", messages);
-            requestBody.put("max_tokens", 2000);
-            requestBody.put("temperature", 0.7);
+            StringBuilder fullContent = new StringBuilder();
 
-            // 设置请求头
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Bearer " + config.getApiKey());
-            headers.set("Content-Type", "application/json");
+            for (int round = 0; round <= MAX_CONTINUATIONS; round++) {
+                Map<String, Object> requestBody = new HashMap<>();
+                requestBody.put("model", config.getModel());
+                requestBody.put("messages", messages);
+                requestBody.put("max_tokens", MAX_TOKENS);
+                requestBody.put("temperature", 0.7);
 
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("Authorization", "Bearer " + config.getApiKey());
+                headers.set("Content-Type", "application/json");
 
-            logger.debug("发送请求到: {}", config.getApiUrl());
+                HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-            // 发送请求
-            ResponseEntity<Map> response = restTemplate.postForEntity(config.getApiUrl(), entity, Map.class);
+                logger.debug("发送请求到: {} (第{}轮)", config.getApiUrl(), round + 1);
 
-            long elapsed = System.currentTimeMillis() - startTime;
-            logger.info("AI 调用完成, 耗时: {}ms", elapsed);
+                ResponseEntity<Map> response = restTemplate.postForEntity(config.getApiUrl(), entity, Map.class);
 
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                Map<String, Object> responseBody = response.getBody();
-
-                // OpenAI 格式: {"choices": [{"message": {"content": "..."}}]}
-                if (responseBody.containsKey("choices")) {
-                    List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
-                    if (!choices.isEmpty()) {
-                        Map<String, Object> choice = choices.get(0);
-                        Map<String, Object> message = (Map<String, Object>) choice.get("message");
-                        if (message != null && message.containsKey("content")) {
-                            return (String) message.get("content");
-                        }
+                if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                    if (round == 0) {
+                        return "AI 调用失败，HTTP 状态码: " + response.getStatusCode();
                     }
+                    break;
                 }
 
-                // 检查错误信息
+                Map<String, Object> responseBody = response.getBody();
+
                 if (responseBody.containsKey("error")) {
                     Object error = responseBody.get("error");
                     logger.error("API 返回错误: {}", error);
-                    return "AI 服务错误: " + error;
+                    if (round == 0) {
+                        return "AI 服务错误: " + error;
+                    }
+                    break;
                 }
 
-                return "AI 响应格式异常，请检查 API 返回";
+                if (!responseBody.containsKey("choices")) {
+                    if (round == 0) {
+                        return "AI 响应格式异常，请检查 API 返回";
+                    }
+                    break;
+                }
+
+                List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
+                if (choices.isEmpty()) {
+                    if (round == 0) {
+                        return "AI 响应格式异常，请检查 API 返回";
+                    }
+                    break;
+                }
+
+                Map<String, Object> choice = choices.get(0);
+                Map<String, Object> message = (Map<String, Object>) choice.get("message");
+                if (message == null || !message.containsKey("content")) {
+                    if (round == 0) {
+                        return "AI 响应格式异常，请检查 API 返回";
+                    }
+                    break;
+                }
+
+                String content = (String) message.get("content");
+                fullContent.append(content);
+
+                String finishReason = choice.get("finish_reason") != null ? String.valueOf(choice.get("finish_reason")) : "";
+                logger.info("第{}轮完成, finish_reason={}, 内容长度={}", round + 1, finishReason, content.length());
+
+                if (!"length".equals(finishReason)) {
+                    break;
+                }
+
+                logger.warn("AI 响应因 max_tokens 被截断 (finish_reason=length)，开始续写第{}轮...", round + 2);
+
+                Map<String, String> assistantMessage = new HashMap<>();
+                assistantMessage.put("role", "assistant");
+                assistantMessage.put("content", content);
+                messages.add(assistantMessage);
+
+                Map<String, String> continueMessage = new HashMap<>();
+                continueMessage.put("role", "user");
+                continueMessage.put("content", "请继续生成，从你上次中断的地方继续。");
+                messages.add(continueMessage);
             }
 
-            return "AI 调用失败，HTTP 状态码: " + response.getStatusCode();
+            long elapsed = System.currentTimeMillis() - startTime;
+            logger.info("AI 调用完成, 总耗时: {}ms, 总内容长度: {}", elapsed, fullContent.length());
+
+            return fullContent.toString();
 
         } catch (org.springframework.web.client.ResourceAccessException e) {
             long elapsed = System.currentTimeMillis() - startTime;
             logger.error("AI 调用超时, 耗时: {}ms, 错误: {}", elapsed, e.getMessage());
-            return "AI 调用超时，请稍后重试";
+            return "AI 调用超时，可能是网络问题或 AI 服务响应缓慢，请稍后重试";
         } catch (Exception e) {
             long elapsed = System.currentTimeMillis() - startTime;
             logger.error("AI 调用异常, 耗时: {}ms", elapsed, e);

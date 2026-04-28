@@ -22,6 +22,7 @@ public class PeriodSummary {
     private String periodType;
     private LocalDate startDate;
     private LocalDate endDate;
+    @Column(columnDefinition = "TEXT")
     private String summary;
     private String highlights;
     private String improvements;

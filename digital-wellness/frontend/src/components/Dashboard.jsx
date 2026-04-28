@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Statistic, Row, Col, Spin, Empty } from 'antd';
+import { Card, Typography, Statistic, Row, Col, Spin, Empty, List, Checkbox, Button, Space, message } from 'antd';
+import { CheckCircleOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import request from '../utils/request';
 
 const { Title, Paragraph } = Typography;
@@ -7,6 +8,8 @@ const { Title, Paragraph } = Typography;
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
+  const [todayTasks, setTodayTasks] = useState([]);
+  const [tasksLoading, setTasksLoading] = useState(true);
 
   useEffect(() => {
     loadDashboardData();
@@ -14,13 +17,34 @@ const Dashboard = () => {
 
   const loadDashboardData = async () => {
     setLoading(true);
+    setTasksLoading(true);
     try {
-      const res = await request.get('/statistics/dashboard');
-      setStats(res.data);
+      // 并行加载统计数据和今日待办
+      const [statsRes, tasksRes] = await Promise.all([
+        request.get('/statistics/dashboard'),
+        request.get('/daily-subtasks/today')
+      ]);
+      setStats(statsRes.data);
+      setTodayTasks(tasksRes.data || []);
     } catch (error) {
-      console.error('加载统计数据失败:', error);
+      console.error('加载数据失败:', error);
     } finally {
       setLoading(false);
+      setTasksLoading(false);
+    }
+  };
+
+  // 完成任务
+  const handleCompleteTask = async (taskId) => {
+    try {
+      await request.put(`/daily-subtasks/${taskId}/complete`);
+      message.success('任务完成成功');
+      // 重新加载今日待办
+      const res = await request.get('/daily-subtasks/today');
+      setTodayTasks(res.data || []);
+    } catch (error) {
+      message.error('任务完成失败');
+      console.error('完成任务失败:', error);
     }
   };
 
@@ -85,6 +109,51 @@ const Dashboard = () => {
           <Empty description="暂无数据" />
         </Card>
       )}
+
+      {/* 今日待办 */}
+      <Card style={{ marginTop: '24px' }} title={<Space><UnorderedListOutlined />今日待办</Space>}>
+        {tasksLoading ? (
+          <div style={{ padding: '40px 0', textAlign: 'center' }}>
+            <Spin size="small" />
+          </div>
+        ) : todayTasks.length > 0 ? (
+          <List
+            dataSource={todayTasks}
+            itemLayout="horizontal"
+            renderItem={item => (
+              <List.Item
+                actions={[
+                  <Button
+                    type="link"
+                    icon={<CheckCircleOutlined />}
+                    onClick={() => handleCompleteTask(item.id)}
+                    disabled={item.isCompleted}
+                  >
+                    完成
+                  </Button>
+                ]}
+              >
+                <List.Item.Meta
+                  title={
+                    <Checkbox checked={item.isCompleted} disabled>
+                      {item.taskContent}
+                    </Checkbox>
+                  }
+                  description={
+                    <span style={{ color: '#666', fontSize: '12px' }}>
+                      目标：{item.goalName}
+                    </span>
+                  }
+                />
+              </List.Item>
+            )}
+          />
+        ) : (
+          <div style={{ padding: '40px 0', textAlign: 'center' }}>
+            <Empty description="今日暂无规划，去创建目标吧" />
+          </div>
+        )}
+      </Card>
     </div>
   );
 };

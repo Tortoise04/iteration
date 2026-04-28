@@ -4,6 +4,7 @@ C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digita
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\controller\PeriodSummaryController.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\controller\AuthController.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\ai\AIConfig.java
+C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\controller\DailySubtaskController.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\service\AchievementService.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\service\impl\DailyActivityServiceImpl.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\dto\AppUsageDetailDTO.java
@@ -13,6 +14,7 @@ C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digita
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\entity\AppUsageDetail.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\repository\PhoneUsageRepository.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\util\JwtUtil.java
+C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\service\DailySubtaskService.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\service\impl\UserDetailsServiceImpl.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\entity\PeriodSummary.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\repository\AchievementRepository.java
@@ -46,8 +48,10 @@ C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digita
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\repository\DailyActivityRepository.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\repository\UserRepository.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\entity\AppPreset.java
+C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\service\impl\DailySubtaskServiceImpl.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\entity\DailySubtask.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\entity\PhoneUsage.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\entity\Goal.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\repository\AppUsageDetailRepository.java
+C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\util\SecurityUtils.java
 C:\Users\Dylan\Desktop\iterate\digital-wellness\src\main\java\com\iterate\digitalwellness\repository\GoalRepository.java

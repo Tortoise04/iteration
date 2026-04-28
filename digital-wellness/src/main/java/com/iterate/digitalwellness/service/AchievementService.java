@@ -7,6 +7,7 @@ import java.util.List;
 public interface AchievementService {
     Achievement save(Achievement achievement);
     List<Achievement> findAll();
+    List<Achievement> findByUserId(Long userId);
     Achievement findById(Long id);
     void deleteById(Long id);
 }

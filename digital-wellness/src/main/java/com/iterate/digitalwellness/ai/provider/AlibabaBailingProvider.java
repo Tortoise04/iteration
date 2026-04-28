@@ -21,8 +21,10 @@ public class AlibabaBailingProvider implements AIProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(AlibabaBailingProvider.class);
     private static final String NAME = "alibaba-bailing";
-    private static final int CONNECT_TIMEOUT = 30000;  // 连接超时 30秒
-    private static final int READ_TIMEOUT = 120000;    // 读取超时 120秒（AI 生成可能较慢）
+    private static final int CONNECT_TIMEOUT = 30000;
+    private static final int READ_TIMEOUT = 300000;
+    private static final int MAX_TOKENS = 4096;
+    private static final int MAX_CONTINUATIONS = 3;
 
     private final ProviderConfig config;
     private final RestTemplate restTemplate;
@@ -57,11 +59,6 @@ public class AlibabaBailingProvider implements AIProvider {
         long startTime = System.currentTimeMillis();
 
         try {
-            // 构建请求体 - 阿里云百炼 API 格式
-            Map<String, Object> requestBody = new HashMap<>();
-
-            // 模型参数
-            Map<String, Object> input = new HashMap<>();
             List<Map<String, String>> messages = new ArrayList<>();
 
             if (systemPrompt != null && !systemPrompt.isEmpty()) {
@@ -76,69 +73,114 @@ public class AlibabaBailingProvider implements AIProvider {
             userMessage.put("content", userPrompt);
             messages.add(userMessage);
 
-            input.put("messages", messages);
+            StringBuilder fullContent = new StringBuilder();
 
-            // 参数配置
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("max_tokens", 2000);
-            parameters.put("temperature", 0.7);
-            parameters.put("result_format", "message");
+            for (int round = 0; round <= MAX_CONTINUATIONS; round++) {
+                Map<String, Object> input = new HashMap<>();
+                input.put("messages", messages);
 
-            requestBody.put("model", config.getModel());
-            requestBody.put("input", input);
-            requestBody.put("parameters", parameters);
+                Map<String, Object> parameters = new HashMap<>();
+                parameters.put("max_tokens", MAX_TOKENS);
+                parameters.put("temperature", 0.7);
+                parameters.put("result_format", "message");
 
-            // 设置请求头
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Bearer " + config.getApiKey());
-            headers.set("Content-Type", "application/json");
+                Map<String, Object> requestBody = new HashMap<>();
+                requestBody.put("model", config.getModel());
+                requestBody.put("input", input);
+                requestBody.put("parameters", parameters);
 
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("Authorization", "Bearer " + config.getApiKey());
+                headers.set("Content-Type", "application/json");
 
-            logger.debug("发送请求到: {}", config.getApiUrl());
+                HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-            // 发送请求
-            ResponseEntity<Map> response = restTemplate.postForEntity(config.getApiUrl(), entity, Map.class);
+                logger.debug("发送请求到: {} (第{}轮)", config.getApiUrl(), round + 1);
 
-            long elapsed = System.currentTimeMillis() - startTime;
-            logger.info("AI 调用完成, 耗时: {}ms", elapsed);
+                ResponseEntity<Map> response = restTemplate.postForEntity(config.getApiUrl(), entity, Map.class);
 
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                    if (round == 0) {
+                        return "AI 调用失败，HTTP 状态码: " + response.getStatusCode();
+                    }
+                    break;
+                }
+
                 Map<String, Object> responseBody = response.getBody();
                 logger.debug("响应内容: {}", responseBody);
 
-                // 阿里云百炼返回格式: {"output": {"choices": [{"message": {"content": "..."}}]}}
-                if (responseBody.containsKey("output")) {
-                    Map<String, Object> output = (Map<String, Object>) responseBody.get("output");
-                    if (output.containsKey("choices")) {
-                        List<Map<String, Object>> choices = (List<Map<String, Object>>) output.get("choices");
-                        if (!choices.isEmpty()) {
-                            Map<String, Object> choice = choices.get(0);
-                            Map<String, Object> message = (Map<String, Object>) choice.get("message");
-                            if (message != null && message.containsKey("content")) {
-                                return (String) message.get("content");
-                            }
-                        }
-                    }
-                    // 兼容旧格式: {"output": {"text": "..."}}
-                    if (output.containsKey("text")) {
-                        return (String) output.get("text");
-                    }
-                }
-
-                // 检查错误信息
                 if (responseBody.containsKey("code")) {
                     String errorCode = String.valueOf(responseBody.get("code"));
                     String errorMsg = String.valueOf(responseBody.get("message"));
                     logger.error("API 返回错误: code={}, message={}", errorCode, errorMsg);
-                    return "AI 服务错误: " + errorMsg;
+                    if (round == 0) {
+                        return "AI 服务错误: " + errorMsg;
+                    }
+                    break;
                 }
 
-                logger.error("未知的响应格式: {}", responseBody);
-                return "AI 响应格式异常，请检查 API 返回";
+                if (!responseBody.containsKey("output")) {
+                    if (round == 0) {
+                        return "AI 响应格式异常，请检查 API 返回";
+                    }
+                    break;
+                }
+
+                Map<String, Object> output = (Map<String, Object>) responseBody.get("output");
+
+                String content = null;
+                String finishReason = "";
+
+                if (output.containsKey("choices")) {
+                    List<Map<String, Object>> choices = (List<Map<String, Object>>) output.get("choices");
+                    if (!choices.isEmpty()) {
+                        Map<String, Object> choice = choices.get(0);
+                        Map<String, Object> message = (Map<String, Object>) choice.get("message");
+                        if (message != null && message.containsKey("content")) {
+                            content = (String) message.get("content");
+                        }
+                        if (choice.containsKey("finish_reason")) {
+                            finishReason = String.valueOf(choice.get("finish_reason"));
+                        }
+                    }
+                }
+
+                if (content == null && output.containsKey("text")) {
+                    content = (String) output.get("text");
+                }
+
+                if (content == null) {
+                    if (round == 0) {
+                        logger.error("未知的响应格式: {}", responseBody);
+                        return "AI 响应格式异常，请检查 API 返回";
+                    }
+                    break;
+                }
+
+                fullContent.append(content);
+                logger.info("第{}轮完成, finish_reason={}, 内容长度={}", round + 1, finishReason, content.length());
+
+                if (!"length".equals(finishReason)) {
+                    break;
+                }
+
+                logger.warn("AI 响应因 max_tokens 被截断 (finish_reason=length)，开始续写第{}轮...", round + 2);
+
+                Map<String, String> assistantMessage = new HashMap<>();
+                assistantMessage.put("role", "assistant");
+                assistantMessage.put("content", content);
+                messages.add(assistantMessage);
+
+                Map<String, String> continueMessage = new HashMap<>();
+                continueMessage.put("role", "user");
+                continueMessage.put("content", "请继续生成，从你上次中断的地方继续。");
+                messages.add(continueMessage);
             }
 
-            return "AI 调用失败，HTTP 状态码: " + response.getStatusCode();
+            long elapsed = System.currentTimeMillis() - startTime;
+            logger.info("AI 调用完成, 总耗时: {}ms, 总内容长度: {}", elapsed, fullContent.length());
+
+            return fullContent.toString();
 
         } catch (org.springframework.web.client.ResourceAccessException e) {
             long elapsed = System.currentTimeMillis() - startTime;

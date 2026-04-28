@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Button, Modal, Form, Input, DatePicker, Select, message, Space, Popconfirm } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Card, Table, Button, Modal, Form, Input, DatePicker, Select, message, Space, Popconfirm, Spin } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, RobotOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import request from '../utils/request';
 
@@ -13,6 +13,9 @@ const GoalPage = () => {
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiModalVisible, setAiModalVisible] = useState(false);
+  const [currentGoal, setCurrentGoal] = useState(null);
 
   // 加载数据
   const loadData = async () => {
@@ -91,6 +94,29 @@ const GoalPage = () => {
     }
   };
 
+  // AI 目标拆解
+  const handleAiBreakdown = (record) => {
+    setCurrentGoal(record);
+    setAiModalVisible(true);
+  };
+
+  // 执行 AI 拆解
+  const executeAiBreakdown = async () => {
+    if (!currentGoal) return;
+    
+    setAiLoading(true);
+    try {
+      const res = await request.post(`/goals/${currentGoal.id}/ai-breakdown`);
+      message.success(`成功生成 ${res.data.length} 个每日子任务`);
+      setAiModalVisible(false);
+    } catch (error) {
+      message.error('AI 拆解失败，请重试');
+      console.error('AI 拆解失败:', error);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   // 表格列定义
   const columns = [
     {
@@ -138,7 +164,7 @@ const GoalPage = () => {
     {
       title: '操作',
       key: 'action',
-      width: 150,
+      width: 200,
       render: (_, record) => (
         <Space>
           <Button
@@ -147,6 +173,13 @@ const GoalPage = () => {
             onClick={() => handleEdit(record)}
           >
             编辑
+          </Button>
+          <Button
+            type="link"
+            icon={<RobotOutlined />}
+            onClick={() => handleAiBreakdown(record)}
+          >
+            AI 拆解
           </Button>
           <Popconfirm
             title="确定要删除这个目标吗？"
@@ -264,6 +297,49 @@ const GoalPage = () => {
             </Space>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* AI 拆解模态框 */}
+      <Modal
+        title="AI 目标拆解"
+        open={aiModalVisible}
+        onCancel={() => setAiModalVisible(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setAiModalVisible(false)}>
+            取消
+          </Button>,
+          <Button
+            key="confirm"
+            type="primary"
+            loading={aiLoading}
+            onClick={executeAiBreakdown}
+            disabled={aiLoading}
+          >
+            开始拆解
+          </Button>
+        ]}
+        width={500}
+      >
+        <div style={{ padding: '20px 0' }}>
+          {aiLoading ? (
+            <div style={{ textAlign: 'center', padding: '40px 0' }}>
+              <Spin size="large" tip="AI 正在分析目标..." />
+            </div>
+          ) : (
+            <div>
+              <h4>目标信息</h4>
+              <p><strong>目标：</strong>{currentGoal?.goal}</p>
+              {currentGoal?.description && (
+                <p><strong>描述：</strong>{currentGoal.description}</p>
+              )}
+              <p><strong>时间范围：</strong>{currentGoal?.startTime ? dayjs(currentGoal.startTime).format('YYYY-MM-DD') : ''} 至 {currentGoal?.endTime ? dayjs(currentGoal.endTime).format('YYYY-MM-DD') : ''}</p>
+              <div style={{ marginTop: '20px', padding: '15px', background: '#f5f5f5', borderRadius: '4px' }}>
+                <p>AI 将根据目标内容和时间范围，自动生成合理的每日执行计划。</p>
+                <p style={{ marginTop: '10px' }}>生成的子任务将自动保存到系统中，您可以在仪表盘查看今日待办。</p>
+              </div>
+            </div>
+          )}
+        </div>
       </Modal>
     </div>
   );
