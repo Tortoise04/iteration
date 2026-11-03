@@ -1,0 +1,66 @@
+server:
+  port: 8080
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  application:
+    name: smart-schedule
+  # 本机密钥放在仓库之外的私有文件里（不进版本库）；没有该文件时优雅降级为空 key
+  config:
+    import: optional:file:${user.home}/AppData/Local/SmartSchedule/config/application-local.yml
+
+  # ── 默认运行形态：内嵌 H2 文件库（契约 §6），单 jar 一键启动 ──
+  datasource:
+    url: jdbc:h2:file:${user.home}/AppData/Local/SmartSchedule/data/smartschedule;MODE=MySQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: true
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: never
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
+# JWT Configuration
+app:
+  jwt:
+    secret: smart-schedule-jwt-secret-key-change-in-production-must-be-at-least-256-bits
+    expiration-ms: 86400000
+  ai:
+    provider: deepseek
+    deepseek:
+      api-key: ${DEEPSEEK_API_KEY:}
+      base-url: https://api.deepseek.com/v1
+      model: deepseek-v4-pro
+      max-tokens: 8192
+      temperature: 0.7
+      # 任务书生成专用（契约 §2）：deepseek-chat 不会把 token 花在 reasoning 上，JSON 不易被截断
+      taskbook-model: deepseek-chat
+      taskbook-max-tokens: 8192
+      taskbook-temperature: 0.4
+    zhipu:
+      api-key: ${ZHIPU_API_KEY:}
+      base-url: https://open.bigmodel.cn/api/paas/v4
+      model: glm-4v
+      max-tokens: 2048
+      temperature: 0.3
+
+logging:
+  level:
+    com.smartschedule: DEBUG
+    org.springframework.security: INFO

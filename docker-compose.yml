@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: smartschedule-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 041222
+      MYSQL_DATABASE: smart_schedule
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p041222"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - smartschedule
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: smartschedule-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/smart_schedule?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: "041222"
+      APP_AI_DEEPSEEK_API_KEY: "${DEEPSEEK_API_KEY:-sk-placeholder}"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - smartschedule
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: smartschedule-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - smartschedule
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  smartschedule:
+    driver: bridge

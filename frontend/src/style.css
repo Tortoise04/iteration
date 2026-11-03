@@ -1,0 +1,66 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    'PingFang SC',
+    'Hiragino Sans GB',
+    'Microsoft YaHei UI',
+    'Microsoft YaHei',
+    'Noto Sans SC',
+    sans-serif;
+  font-weight: 350;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #334155;
+  background: #f0f4ff;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.55); }
+
+/* Element Plus 覆盖 */
+.el-card {
+  border-radius: 14px !important;
+  border: 1px solid rgba(226, 232, 240, 0.6) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,.04) !important;
+  transition: box-shadow .2s;
+}
+.el-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,.06) !important;
+}
+
+.el-button--primary {
+  border-radius: 10px !important;
+  font-weight: 500 !important;
+}
+
+.el-tag {
+  border-radius: 6px !important;
+  font-weight: 450 !important;
+}
+
+.el-input__wrapper {
+  border-radius: 10px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04) !important;
+}
+
+.el-menu {
+  border-radius: 0 12px 12px 0;
+}

@@ -1,0 +1,21 @@
+# 构建产物
+backend/target/
+frontend/dist/
+frontend/node_modules/
+*.jar
+*.war
+
+# 本机配置与数据（密钥不进版本库）
+application-local.yml
+*.h2.db
+*.trace.db
+data/
+logs/
+
+# IDE / 系统
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+*.log
