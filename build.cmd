@@ -15,7 +15,7 @@ if errorlevel 1 goto :badbuild
 echo [2/2] 打包后端...
 cd /d "%ROOT%\backend"
 if errorlevel 1 goto :badcd
-call mvn -DskipTests package
+call mvn -DskipTests clean package
 if errorlevel 1 goto :badmvn
 echo.
 echo 构建完成: %ROOT%\backend\target\smart-schedule-1.0.0.jar
